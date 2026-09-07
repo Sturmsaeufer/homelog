@@ -53,7 +53,7 @@
 - **PDF Bill Templates** with drag-and-drop field extraction wizard
 - **Global Search** with full-text search (FTS5) across expenses, bills, utilities, and projects
 - **Multi-Currency** support — per-expense and per-utility currency with live exchange rates
-- **Multi-Language UI** — Italian and English, locale-aware number/currency/date formatting
+- **Multi-Language UI** — locale-aware number/currency/date formatting
 - **Interactive Dashboard** with adaptive trend charts (daily/monthly/quarterly granularity)
 - **Projects** for budget tracking (renovations, trips, events)
 - **Multi-User / Multi-Property** support
