@@ -20,8 +20,8 @@
 <table>
   <tr>
     <td align="center"><strong>Dashboard</strong></td>
-    <td align="center"><strong>Spese</strong></td>
-    <td align="center"><strong>Servizi</strong></td>
+    <td align="center"><strong>Expenses</strong></td>
+    <td align="center"><strong>Services</strong></td>
   </tr>
   <tr>
     <td><img src="docs/screenshots/dashboard.jpg" alt="Dashboard" width="280" /></td>
@@ -29,9 +29,9 @@
     <td><img src="docs/screenshots/services.jpg" alt="Services" width="280" /></td>
   </tr>
   <tr>
-    <td align="center"><strong>Dettaglio Servizio</strong></td>
-    <td align="center"><strong>Progetti</strong></td>
-    <td align="center"><strong>Impostazioni</strong></td>
+    <td align="center"><strong>Service Detail</strong></td>
+    <td align="center"><strong>Projects</strong></td>
+    <td align="center"><strong>Settings</strong></td>
   </tr>
   <tr>
     <td><img src="docs/screenshots/service-details.jpg" alt="Service Detail" width="280" /></td>
