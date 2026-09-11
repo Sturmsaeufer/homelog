@@ -7,10 +7,10 @@
         <div
           v-for="req in pendingRequests"
           :key="req.id"
-          class="flex items-center justify-between gap-3 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg"
+          class="flex items-center justify-between gap-3 p-4 bg-warning/10 border border-warning/30 rounded-lg"
         >
           <div class="flex items-center gap-3 min-w-0">
-            <div class="w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900/40 flex items-center justify-center text-sm font-medium text-yellow-700 dark:text-yellow-300 flex-shrink-0">
+            <div class="w-10 h-10 rounded-full bg-warning/10 flex items-center justify-center text-sm font-medium text-warning-soft flex-shrink-0">
               {{ getInitials(req.user?.name || '?') }}
             </div>
             <div class="min-w-0">
@@ -58,13 +58,13 @@
                         peer-checked:bg-blue-600">
             </div>
           </label>
-          <span v-else class="ml-4 text-sm font-medium" :class="splitMode ? 'text-green-600 dark:text-green-400' : 'text-ink-faint'">
+          <span v-else class="ml-4 text-sm font-medium" :class="splitMode ? 'text-positive-soft' : 'text-ink-faint'">
             {{ splitMode ? t('settings.family.splitActive') : t('settings.family.splitInactive') }}
           </span>
         </div>
 
         <!-- Split Settings -->
-        <div v-if="splitMode" class="pl-6 space-y-4 border-l-2 border-blue-200 dark:border-blue-800">
+        <div v-if="splitMode" class="pl-6 space-y-4 border-l-2 border-info/30">
           <div>
             <label class="block text-sm font-medium text-ink-soft mb-3">
               {{ t('settings.family.splitWith') }}
@@ -93,15 +93,15 @@
                   />
                   <div
                     v-else
-                    class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900
+                    class="w-8 h-8 rounded-full bg-surface-2
                               flex items-center justify-center text-sm font-medium
-                              text-blue-600 dark:text-blue-300 flex-shrink-0"
+                              text-ink-soft flex-shrink-0"
                   >
                     {{ getInitials(member.name) }}
                   </div>
                   <span class="text-ink truncate">{{ member.name }}</span>
                   <span v-if="member.is_virtual" class="text-xs text-ink-muted flex-shrink-0">{{ t('settings.family.memberVirtual') }}</span>
-                  <span v-if="member.user_role === 'admin'" class="text-xs bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 px-1.5 py-0.5 rounded font-medium flex-shrink-0">{{ t('settings.family.memberAdminBadge') }}</span>
+                  <Badge v-if="member.user_role === 'admin'" variant="info" class="flex-shrink-0">{{ t('settings.family.memberAdminBadge') }}</Badge>
                 </div>
                 <div class="flex items-center gap-1 flex-shrink-0">
                   <!-- Admin: toggle admin role -->
@@ -109,7 +109,7 @@
                     v-if="isAdmin && !member.is_virtual && member.user_id !== currentUserId"
                     @click="toggleAdminRole(member)"
                     class="p-2 transition-colors"
-                    :class="member.user_role === 'admin' ? 'text-amber-500 hover:text-amber-700' : 'text-ink-faint hover:text-amber-500'"
+                    :class="member.user_role === 'admin' ? 'text-info-soft hover:opacity-80' : 'text-ink-faint hover:text-info-soft'"
                     :title="member.user_role === 'admin' ? t('settings.family.demoteAdminTooltip') : t('settings.family.promoteAdminTooltip')"
                   >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -120,7 +120,7 @@
                   <button
                     v-if="isAdmin && member.is_virtual"
                     @click="deleteMember(member.id)"
-                    class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-2"
+                    class="text-ink-faint hover:text-danger-soft p-2"
                     :aria-label="t('settings.family.deleteMemberAria')"
                   >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -131,7 +131,7 @@
                   <button
                     v-if="isAdmin && !member.is_virtual && member.user_id !== currentUserId"
                     @click="deleteUserAccount(member)"
-                    class="text-red-500 hover:text-red-700 dark:hover:text-red-400 p-2"
+                    class="text-ink-faint hover:text-danger-soft p-2"
                     :aria-label="t('settings.family.deleteUserAria')"
                     :title="t('settings.family.deleteUserTooltip')"
                   >
@@ -171,7 +171,7 @@
           </div>
         </div>
 
-        <div v-if="splitMode" class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+        <div v-if="splitMode" class="p-4 bg-info/10 rounded-lg">
           <div class="text-sm text-ink-soft">
             <div class="font-medium mb-2">{{ t('settings.family.splitSummaryTitle') }}</div>
             <ul class="list-disc list-inside space-y-1 text-ink-soft">
@@ -191,6 +191,7 @@ defineOptions({ name: 'FamilyTab' })
 
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import Badge from '@/components/common/Badge.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useSettingsStore } from '@/stores/settings'
 import { useConfirm } from '@/composables/useConfirm'

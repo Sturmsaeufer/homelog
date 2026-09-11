@@ -1,5 +1,7 @@
 <template>
-  <div class="h-64">
+  <!-- Height comes from the parent: the card decides, so the chart can grow
+       into the space next to a long category list instead of leaving a void. -->
+  <div class="h-full min-h-64">
     <Bar :data="chartData" :options="mergedOptions" />
   </div>
 </template>
@@ -17,11 +19,13 @@ import {
   Legend
 } from 'chart.js'
 import { useSettingsStore } from '@/stores/settings'
+import { useChartTheme } from '@/composables/useChartTheme'
 import { formatCurrency as _formatCurrency } from '@/utils/dateFormatter'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 const settingsStore = useSettingsStore()
+const theme = useChartTheme()
 
 const props = defineProps({
   chartData: {
@@ -50,11 +54,19 @@ const defaultOptions = computed(() => ({
     }
   },
   scales: {
+    x: {
+      ticks: { color: theme.value.tick },
+      grid: { display: false },
+      border: { color: theme.value.grid }
+    },
     y: {
       beginAtZero: true,
       ticks: {
+        color: theme.value.tick,
         callback: (value) => _formatCurrency(value, settingsStore.formatSettings, { maximumFractionDigits: 0 })
-      }
+      },
+      grid: { color: theme.value.grid },
+      border: { display: false }
     }
   }
 }))

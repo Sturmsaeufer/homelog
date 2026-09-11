@@ -49,12 +49,12 @@
                 </div>
                 <div class="flex items-center gap-2 text-sm text-ink-muted mt-0.5 flex-wrap">
                   <span>{{ formatDate(reading.reading_date) }}</span>
-                  <span v-if="reading.source === 'submitted'" class="px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-300 text-xs rounded">
+                  <Badge v-if="reading.source === 'submitted'" variant="info">
                     {{ t('utilities.readingsTab.submittedBadge') }}
-                  </span>
-                  <span v-if="readingBillMap[reading.id]" class="px-1.5 py-0.5 bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-300 text-xs rounded font-mono">
+                  </Badge>
+                  <Badge v-if="readingBillMap[reading.id]" variant="positive" class="font-mono">
                     {{ t('utilities.readingsTab.billBadge', { number: readingBillMap[reading.id] }) }}
-                  </span>
+                  </Badge>
                 </div>
                 <div v-if="reading.notes" class="text-xs text-ink-faint mt-1">{{ reading.notes }}</div>
               </div>
@@ -70,7 +70,7 @@
                 </button>
                 <button
                   @click="confirmDeleteReading(reading)"
-                  class="p-2 rounded-lg text-ink-faint hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                  class="p-2 rounded-lg text-ink-faint hover:text-danger-soft hover:bg-danger/10"
                   :title="t('utilities.readingsTab.deleteTitle')"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -98,6 +98,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import Badge from '@/components/common/Badge.vue'
 import { useUtilitiesStore } from '@/stores/utilities'
 import { useSettingsStore } from '@/stores/settings'
 import { useConfirm } from '@/composables/useConfirm'

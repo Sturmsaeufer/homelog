@@ -31,7 +31,7 @@
         </button>
         <button
           @click="confirmDelete"
-          class="p-2.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-ink-faint hover:text-red-500 dark:hover:text-red-400"
+          class="p-2.5 rounded-lg hover:bg-danger/10 text-ink-faint hover:text-danger-soft"
           :title="t('projects.detail.deleteTooltip')"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -65,7 +65,7 @@
 
         <Card class="p-4">
           <div class="text-xs sm:text-sm text-ink-soft mb-1">{{ t('projects.detail.kpiSpent') }}</div>
-          <div class="text-lg sm:text-2xl font-bold text-blue-600">
+          <div class="text-lg sm:text-2xl font-bold text-ink">
             {{ formatCurrency(stats.total_spent) }}
           </div>
         </Card>
@@ -77,7 +77,7 @@
                available. formatCurrency (Intl) renders the sign locale-aware. -->
           <div :class="[
             'text-lg sm:text-2xl font-bold',
-            stats.remaining >= 0 ? 'text-green-600' : 'text-red-600'
+            stats.remaining >= 0 ? 'text-positive' : 'text-accent-soft'
           ]">
             {{ formatCurrency(stats.remaining) }}
           </div>
@@ -85,7 +85,7 @@
 
         <Card class="p-4">
           <div class="text-xs sm:text-sm text-ink-soft mb-1">{{ t('projects.detail.kpiCompletion') }}</div>
-          <div class="text-lg sm:text-2xl font-bold text-purple-600">
+          <div class="text-lg sm:text-2xl font-bold text-ink">
             {{ stats.percentage_spent.toFixed(1) }}%
           </div>
         </Card>
@@ -97,16 +97,18 @@
           <span class="text-ink-soft">{{ t('projects.detail.progressLabel') }}</span>
           <span :class="[
             'font-medium',
-            stats.percentage_spent > 100 ? 'text-red-600' : 'text-ink'
+            stats.percentage_spent > 100 ? 'text-accent-soft' : 'text-ink'
           ]">
             {{ stats.percentage_spent.toFixed(1) }}%
           </span>
         </div>
+        <!-- Over budget escalates within the accent instead of jumping to a
+             colour the palette does not define. -->
         <div class="w-full bg-surface-3 rounded-full h-3">
           <div
             :class="[
               'h-3 rounded-full transition-all',
-              stats.percentage_spent > 100 ? 'bg-red-600' : 'bg-blue-600'
+              stats.percentage_spent > 100 ? 'bg-accent' : 'bg-accent/50'
             ]"
             :style="{ width: Math.min(stats.percentage_spent, 100) + '%' }"
           ></div>
@@ -143,12 +145,9 @@
         <Card class="p-4 space-y-3">
           <div class="flex items-center justify-between">
             <span class="text-sm text-ink-soft">{{ t('projects.detail.infoStatus') }}</span>
-            <span :class="[
-              'px-2 py-1 text-xs rounded-full font-medium',
-              getStatusColor(project.status)
-            ]">
+            <Badge :variant="statusVariant(project.status)">
               {{ getStatusLabel(project.status) }}
-            </span>
+            </Badge>
           </div>
           <div class="flex items-center justify-between">
             <span class="text-sm text-ink-soft">{{ t('projects.detail.infoStart') }}</span>
@@ -173,18 +172,13 @@
               :key="member.id"
               class="flex items-center gap-3"
             >
-              <div class="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center text-xs font-medium text-purple-700 dark:text-purple-300">
+              <div class="w-8 h-8 rounded-full bg-surface-2 flex items-center justify-center text-xs font-medium text-ink-soft">
                 {{ member.name?.[0]?.toUpperCase() }}
               </div>
               <span class="text-sm text-ink flex-1">{{ member.name }}</span>
-              <span :class="[
-                'text-xs px-2 py-0.5 rounded-full',
-                member.role === 'creator' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' :
-                member.role === 'owner' ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' :
-                'bg-surface-2 text-ink-soft'
-              ]">
+              <Badge :variant="member.role === 'creator' ? 'info' : member.role === 'owner' ? 'positive' : 'neutral'">
                 {{ member.role === 'creator' ? t('projects.detail.roleCreator') : member.role === 'owner' ? t('projects.detail.roleCoOwner') : t('projects.detail.roleMember') }}
-              </span>
+              </Badge>
             </div>
           </div>
         </Card>
@@ -224,7 +218,13 @@
             <div class="border-t border-line"></div>
             <div>
               <h4 class="font-medium text-ink mb-3">{{ t('projects.detail.categoryChartTitle') }}</h4>
-              <PieChart :chartData="categoryChartData" />
+              <CategoryBars
+                :rows="categoryRows"
+                :formatCurrency="formatCurrency"
+                :totalCount="categoryBreakdown.length"
+                :expanded="categoriesExpanded"
+                @update:expanded="categoriesExpanded = $event"
+              />
             </div>
           </template>
         </Card>
@@ -303,7 +303,10 @@ import Card from '@/components/common/Card.vue'
 import Button from '@/components/common/Button.vue'
 import AddExpenseModal from '@/components/expenses/AddExpenseModal.vue'
 import EditProjectModal from '@/components/projects/EditProjectModal.vue'
-import PieChart from '@/components/charts/PieChart.vue'
+import CategoryBars from '@/components/charts/CategoryBars.vue'
+import Badge from '@/components/common/Badge.vue'
+import { useChartTheme } from '@/composables/useChartTheme'
+import { foldSlices, sliceColors } from '@/utils/chartSlices'
 import { apiErrorMessage } from '@/utils/apiError'
 
 const route = useRoute()
@@ -355,6 +358,8 @@ const daysRemaining = computed(() => {
   return Math.ceil((end - now) / (1000 * 60 * 60 * 24))
 })
 
+const chartTheme = useChartTheme()
+
 const categoryBreakdown = computed(() => {
   if (!project.value?.expenses?.length) return []
   const map = {}
@@ -365,7 +370,6 @@ const categoryBreakdown = computed(() => {
         category_id: catId,
         category_name: categoryLabel(exp.category, t('projects.detail.noCategory')),
         category_icon: exp.category?.icon || '📦',
-        category_color: exp.category?.color || '#6B7280',
         total: 0,
         count: 0
       }
@@ -376,16 +380,32 @@ const categoryBreakdown = computed(() => {
   return Object.values(map).sort((a, b) => b.total - a.total)
 })
 
-const categoryChartData = computed(() => {
-  const items = categoryBreakdown.value
-  return {
-    labels: items.map(i => i.category_name),
-    datasets: [{
-      data: items.map(i => i.total),
-      backgroundColor: items.map(i => i.category_color),
-      borderWidth: 0
-    }]
-  }
+// Same ranking, palette and folding rule as the dashboard: one encoding for
+// "where did the money go", wherever it is asked.
+const categoriesExpanded = ref(false)
+
+const categorySlices = computed(() =>
+  foldSlices(
+    categoryBreakdown.value,
+    (row) => row.total,
+    categoriesExpanded.value ? 0 : chartTheme.value.series.length
+  )
+)
+
+const categoryRows = computed(() => {
+  const slices = categorySlices.value
+  const colors = sliceColors(slices, chartTheme.value)
+  const total = slices.reduce((sum, s) => sum + s.amount, 0)
+  return slices.map((slice, i) => ({
+    key: slice.row ? `cat-${slice.row.category_id}` : 'other',
+    label: slice.row
+      ? slice.row.category_name
+      : t('projects.detail.otherCategories', { count: slice.count }),
+    amount: slice.amount,
+    share: total > 0 ? (slice.amount / total) * 100 : 0,
+    color: colors[i],
+    clickable: false
+  }))
 })
 
 function formatCurrency(value) {
@@ -403,14 +423,16 @@ function getStatusLabel(status) {
   return t(key) === key ? status : t(key)
 }
 
-function getStatusColor(status) {
+// Same mapping as the project list: a status must not change colour between
+// the card and the page it opens.
+function statusVariant(status) {
   const map = {
-    planned: 'bg-blue-100 text-blue-700',
-    active: 'bg-green-100 text-green-700',
-    completed: 'bg-surface-2 text-ink-soft',
-    cancelled: 'bg-red-100 text-red-700'
+    planned: 'info',
+    active: 'positive',
+    completed: 'neutral',
+    cancelled: 'danger'
   }
-  return map[status] || 'bg-surface-2 text-ink-soft'
+  return map[status] || 'neutral'
 }
 
 function goBack() {

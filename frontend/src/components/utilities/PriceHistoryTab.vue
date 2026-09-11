@@ -20,7 +20,7 @@
       >
         <div class="flex flex-col items-center w-6 flex-shrink-0">
           <div class="w-3 h-3 rounded-full mt-4"
-            :class="change.new_amount > change.old_amount ? 'bg-red-500' : 'bg-green-500'"
+            :class="change.new_amount > change.old_amount ? 'bg-danger' : 'bg-positive'"
           />
           <div v-if="idx < utility.price_changes.length - 1" class="w-px flex-1 bg-surface-3" />
         </div>
@@ -30,7 +30,7 @@
               <div class="min-w-0">
                 <div class="font-medium text-ink">
                   {{ formatCurrency(change.old_amount) }} → {{ formatCurrency(change.new_amount) }}
-                  <span :class="change.new_amount > change.old_amount ? 'text-red-500' : 'text-green-500'" class="text-sm ml-1">
+                  <span :class="change.new_amount > change.old_amount ? 'text-danger-soft' : 'text-positive-soft'" class="text-sm ml-1">
                     ({{ change.new_amount > change.old_amount ? '+' : '' }}{{ formatCurrency(change.new_amount - change.old_amount) }})
                   </span>
                 </div>
@@ -38,7 +38,7 @@
                   {{ t('utilities.priceHistoryTab.fromDate', { date: formatDate(change.effective_date) }) }}
                 </div>
                 <div v-if="change.reason" class="text-xs text-ink-faint mt-1">{{ change.reason }}</div>
-                <div v-if="change.cancellation_deadline" class="mt-1 px-2 py-1 bg-yellow-50 dark:bg-yellow-900/20 rounded text-xs text-yellow-700 dark:text-yellow-300 inline-block">
+                <div v-if="change.cancellation_deadline" class="mt-1 px-2 py-1 bg-warning/10 rounded text-xs text-warning-soft inline-block">
                   {{ t('utilities.priceHistoryTab.cancellationDeadline', { date: formatDate(change.cancellation_deadline) }) }}
                 </div>
               </div>

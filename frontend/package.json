@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run check:colors && vite build",
     "preview": "vite preview",
     "lint": "eslint --fix .",
+    "check:colors": "node scripts/check-color-tokens.mjs",
     "i18n:translate": "node scripts/translate-i18n.mjs",
     "generate-pwa-assets": "pwa-assets-generator"
   },

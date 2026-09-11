@@ -144,7 +144,7 @@
               :class="[
                 'flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors',
                 filters.unsettledOnly
-                  ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300'
+                  ? 'bg-warning/10 text-warning-soft'
                   : 'text-ink-soft hover:bg-surface-2'
               ]"
             >
@@ -248,7 +248,7 @@
             :class="[
               'flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors',
               filters.unsettledOnly
-                ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300'
+                ? 'bg-warning/10 text-warning-soft'
                 : 'text-ink-soft hover:bg-surface-2'
             ]"
           >
@@ -298,23 +298,15 @@
                 <span class="font-medium text-ink line-clamp-2">
                   {{ expense.description || t('expenses.noDescription') }}
                 </span>
-                <span
-                  v-if="expense.is_split"
-                  class="px-2 py-0.5 text-xs rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300"
-                >
+                <Badge v-if="expense.is_split" variant="info">
                   {{ t('expenses.splitBadge') }}
-                </span>
-                <span
+                </Badge>
+                <Badge
                   v-if="expense.is_split"
-                  :class="[
-                    'px-2 py-0.5 text-xs rounded-full',
-                    isExpenseSettled(expense)
-                      ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300'
-                      : 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 ring-1 ring-amber-300 dark:ring-amber-700'
-                  ]"
+                  :variant="isExpenseSettled(expense) ? 'positive' : 'warning'"
                 >
                   {{ isExpenseSettled(expense) ? t('expenses.settled') : t('expenses.unsettled') }}
-                </span>
+                </Badge>
               </div>
               <div class="text-sm text-ink-soft mt-1 flex flex-wrap items-center gap-2">
                 <span>{{ formatDate(expense.date) }}</span>
@@ -324,12 +316,9 @@
                 >
                   {{ categoryLabel(expense.category) }}
                 </span>
-                <span
-                  v-if="expense.project"
-                  class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 rounded text-xs"
-                >
+                <Badge v-if="expense.project" variant="neutral">
                   {{ expense.project.icon }} {{ expense.project.name }}
-                </span>
+                </Badge>
                 <span v-if="expense.is_split && expense.paid_by" class="text-xs flex items-center gap-1 max-w-full overflow-hidden">
                   <span class="hidden sm:inline">{{ t('expenses.paidBy') }}</span>
                   <span class="truncate">{{ expense.paid_by.name }}</span>
@@ -341,7 +330,7 @@
               </div>
             </div>
             <div class="text-right shrink-0">
-              <div class="text-xl font-bold text-blue-600 dark:text-blue-400">
+              <div class="text-xl font-bold text-ink">
                 {{ formatCurrency(expense.amount) }}
               </div>
               <div v-if="expense.original_currency" class="text-xs text-ink-faint">
@@ -350,7 +339,7 @@
               <div v-if="expense.is_split && expense.splits?.length" class="text-xs text-ink-muted">
                 {{ t('expenses.shareEach', { amount: formatCurrency(expense.splits[0]?.amount || 0) }) }}
               </div>
-              <div v-if="expense.bill_id" class="text-xs text-orange-600 dark:text-orange-400 mt-1">
+              <div v-if="expense.bill_id" class="text-xs text-ink-muted mt-1">
                 {{ t('expenses.fromBill') }}
               </div>
               <!-- Actions: on mobile always visible, on desktop hover -->
@@ -370,7 +359,7 @@
                 <button
                   v-if="!(expense.is_split && isExpenseSettled(expense))"
                   @click="deleteExpenseConfirm(expense.id)"
-                  class="p-1.5 text-red-600 hover:text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+                  class="p-1.5 text-danger-soft hover:bg-danger/10 rounded"
                   :aria-label="t('expenses.deleteAria')"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -425,6 +414,7 @@ defineOptions({ name: 'ExpensesView' })
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import Badge from '@/components/common/Badge.vue'
 import { useExpensesStore } from '@/stores/expenses'
 import { useAuthStore } from '@/stores/auth'
 import { useSettingsStore } from '@/stores/settings'
