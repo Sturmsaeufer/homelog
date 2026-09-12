@@ -249,3 +249,24 @@ export function yearOf(dateStr) {
   const date = new Date(dateStr)
   return isNaN(date.getTime()) ? '' : String(date.getFullYear())
 }
+
+/**
+ * A Date's own calendar date, in the viewer's timezone, as "YYYY-MM-DD".
+ *
+ * `date.toISOString().split('T')[0]` looks equivalent but isn't: it always
+ * renders in UTC, so between local midnight and the UTC rollover (e.g. 00:41
+ * in Rome during CEST) it reports yesterday. Use this for any calendar-date
+ * payload the backend must trust as-is (expense date, bill paid_at,
+ * settlement date) — a full ISO timestamp carries the same trap server-side.
+ *
+ * @param {Date} [date] - defaults to now
+ * @returns {string}
+ */
+export function dateOnly(date = new Date()) {
+  return date.toLocaleDateString('sv-SE')
+}
+
+/** Today's calendar date, in the viewer's timezone, as "YYYY-MM-DD". */
+export function todayDateOnly() {
+  return dateOnly()
+}
