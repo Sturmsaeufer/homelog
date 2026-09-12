@@ -56,7 +56,7 @@
         v-for="project in filteredProjects"
         :key="project.id"
         :ref="(el) => registerRow(project.id, el?.$el || el)"
-        class="p-6 cursor-pointer hover:shadow-lg transition-shadow"
+        class="p-6 min-w-0 cursor-pointer hover:shadow-lg transition-shadow"
         :class="{ 'search-flash': isHighlighted(project.id) }"
         @click="viewProject(project)"
       >
@@ -86,7 +86,7 @@
         </div>
 
         <!-- Description -->
-        <p v-if="project.description" class="text-sm text-ink-soft mb-4 line-clamp-2">
+        <p v-if="project.description" class="text-sm text-ink-soft mb-4 line-clamp-2 break-words">
           {{ project.description }}
         </p>
 

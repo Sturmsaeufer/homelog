@@ -139,7 +139,7 @@
       <div v-if="activeTab === 'info'" class="space-y-4">
         <Card v-if="project.description" class="p-4">
           <h4 class="font-medium text-ink mb-2">{{ t('projects.detail.descriptionTitle') }}</h4>
-          <p class="text-ink-soft">{{ project.description }}</p>
+          <p class="text-ink-soft break-words">{{ project.description }}</p>
         </Card>
 
         <Card class="p-4 space-y-3">
